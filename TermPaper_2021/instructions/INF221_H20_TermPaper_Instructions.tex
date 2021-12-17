@@ -1,0 +1,605 @@
+\documentclass[sigconf, nonacm, natbib, screen, balance=False]{acmart}
+
+% Documentation for packages
+% - ACM Article Template
+%    https://www.acm.org/publications/proceedings-template
+% - Pseudocode typesetting CLRS-style:
+%    https://www.cs.dartmouth.edu/~thc/clrscode/clrscode3e.pdf
+% - Python code typesetting
+%    http://ctan.uib.no/macros/latex/contrib/listings/listings.pdf
+% - AMS Math
+%    http://ctan.uib.no/macros/latex/required/amsmath/amsldoc.pdf
+% - Graphics
+%    http://ctan.uib.no/macros/latex/required/graphics/grfguide.pdf
+
+\usepackage{clrscode3e}  
+\usepackage{listings}
+\lstset{language=Python, basicstyle=\ttfamily}
+
+% from https://tex.stackexchange.com/questions/18089/
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% based on https://tex.stackexchange.com/questions/279240/float-for-lstlisting
+\usepackage{float}
+\floatstyle{ruled}
+\newfloat{listing}{tbph}{lop}
+\floatname{listing}{Listing}
+\def\lstfloatautorefname{Listing} % needed for hyperref/auroref
+
+\citestyle{acmauthoryear}
+
+
+\begin{document}
+
+\title{Benchmarking sorting algorithms in Python}
+\subtitle{INF221 Term Paper, NMBU, Autumn 2021}
+
+\author{Hans Ekkehard Plesser}
+\affiliation{Data Science Section, Faculty of Science and Technology,
+  Norwegain University of Life Sciences}
+
+\begin{abstract}
+Your work on the term paper shall train you in performing, analysing
+and presenting benchmark experiments. As practical examples, sorting
+algorithms are used and benchmarked against different types of
+data. All algorithms are implemented in Python. As reference, also
+Python's build-in sorting algorithms are benchmarked.
+\end{abstract}
+
+
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+In your term paper, you will perform benchmarks on a number of sorting
+algorithms for test data of various size and structure, analyze your
+results, visualize them graphically and present them together with
+necessary theoretical background and discuss your results in relation
+to expectations.
+
+You shall collaborate in teams of two as assigned for the regular
+exercises in the course. Both students in a team shall contribute
+equally to all parts of the project, i.e., running benchmarks,
+analyzing and visualizing results, and writing the paper. You shall
+provide by
+\begin{description}
+\item[24 Oct, 18.00] a first draft of your term paper; 
+\item[14 Nov, 18.00] a second draft of your term paper; 
+\item[3 Dec, \underline{18.00}] the final version of your term paper.
+\end{description}
+
+In this document will give information about the scope of this
+project in Sec.~\ref{sec:scope}, the overall structure of the term
+paper in Sec.~\ref{sec:structure}, provide instructions for
+installation of necessary software in Sec.~\ref{sec:sw} followed by
+technical suggestions for benchmarking and analysis in
+Sec.~\ref{sec:benchanalyze}. Finally, Sec.~\ref{sec:tex} contains
+information about writing a paper using \LaTeX.
+
+For examples of scientific papers presenting benchmarking
+results, see \citet{Edel:2019(1.4)} for an analysis of a sorting
+algorithm and \citet{Ippe:2017(30)} for an analysis of a
+completely different problem.
+
+\section{Scope}\label{sec:scope}
+
+The goal of this term paper is to compare real-life behavior of
+sorting algorithms with theoretical expectations.  This requires
+\emph{measurements}: real-life, physical experiments on computer code
+and data.  Important computer science issues you need to relate to in
+your work on the paper are the correctness of code (actual
+implementation, not a pseudo-code algorithm), since it makes no sense
+to compare incorrect code; the suitable choice of test data, reflecting
+relevant test cases and real-life situations; and the correctness of
+the test setup, where a typical error would be that all but the first
+of repeated tests run on sorted data.
+
+In you paper, you shall implement and benchmark the following
+sorting algorithms, using the algorithms presented in pseudocode in
+the course:
+\begin{itemize}
+\item Quadratic algorithms
+  \begin{itemize}
+  \item insertion sort
+  \item bubble sort
+  \end{itemize}
+\item Sub-quadratic algorithms
+  \begin{itemize}
+  \item mergesort
+  \item quicksort
+  \end{itemize}
+\item Combined algorithm
+  \begin{itemize}
+  \item mergesort switching to insertion sort for small data
+    \item quicksort switching to insertion sort for small data
+  \end{itemize}
+\item Built-in sorting functions
+  \begin{itemize}
+  \item Python `sort()`
+  \item NumPy `sort()`
+  \end{itemize}
+\end{itemize}
+
+In your benchmarks, you shall use test data suitable to test the
+behavior of the algorithms under worst case, best case and average
+case scenarios. It is sufficient to test sorting of NumPy arrays with
+floats. Data shall be sorted \emph{in place}.
+
+In order to study the scaling behavior of algorithms with problem
+size, one usually increases problem size $n$ by a factor, e.g., $2$,
+$10$ or $16$ instead of increasing problem size linearly.
+
+You can limit your largest problem size so that the full set of all
+benchmarks executes in no more than two hours on your
+computer. Drop test cases that take too long time (e.g., large sizes
+for quadratic algorithms) or cannot be completed at all (e.g.,
+recursive algorithms with excessive recursion depth).
+
+\subsection{Evaluation and Grading}\label{sec:eval}
+
+You will be graded on the A--F scale based on the term paper submitted
+(PDF file) and the material in your GitLab repository. By default,
+both partners in a team will receive the same grade, but if there are
+clear indications that partners have made significantly different
+contributions to the term paper and underlying code, different grades
+may be given. Details on evaluation criteria will be given soon. 
+
+
+\section{Paper structure and language}\label{sec:structure}
+
+The paper shall be \textbf{at most 8~pages} in the prescribed format
+(including references and acknowledgements, no appendices). 
+
+You paper shall follow the general structure of scientific papers in
+experimental disciplines and have the following sections in this
+order:
+\begin{description}
+  \item[Abstract] Give a concise, single-paragraph overview of the
+    motivation for, goals of and results of the work presented. It
+    should not contain references to the literature or figures in the
+    main text.
+  \item[Introduction] Provide a brief introduction into the topic and
+    describe the purpose of the paper, the questions investigated and
+    the key results obtained. Further, give an overview over the
+    structure of the remainder of the paper.
+  \item[Theory] Describe the algorithms you will benchmark and the
+    expected run-times for the algorithms. Algorithms in pseudo-code
+    will be useful in this part. In journal papers, this part is
+    sometimes included in the introduction or methods section and kept
+    very short, as experts in the field are expected to be familiar
+    with the theory.
+  \item[Methods] Describe how you implemented and tested the
+    algorithms, how you generated test data and how you performed the
+    benchmarks and analyzed results. Provide information on all
+    hardware and software used, including version numbers, and
+    describe where source code used and data generated can be
+    found. You may include brief code excerpts in this part, but
+    should not include the complete source code of algorithms
+    tested. Include a link to the GitLab repository for your code.
+  \item[Results] Present your results using figures and possibly also
+    tables. Figures should be briefly described in figure captions and
+    more thoroughly in the text. In this section, the focus should be
+    on a factual description of the results, not on the
+    interpretation.
+  \item[Discussion] Summarize your findings, compare results obtained
+    for different algorithms and different data, related them to
+    expectations from theory, explain observations and place them in
+    context. You may also suggest further investigations to answer
+    open questions.
+  \item[Acknowledgements] Thank people who have helped you to prepare
+    the paper, e.g., through technical advice or discussions. In
+    journal papers, this part also includes information about funding
+    sources.
+  \item[References] Provide bibliographical information for all
+    references cited in the paper. This section is usually
+    automatically generated from your bibliography database using
+    \BibTeX{} or a similar reference management software.
+  \end{description}
+  
+Most sections should be subdivided into subsections. Further levels of
+hierarchy are possible, but be careful not too introduce too many
+levels. A subdivision of a paper should usually have more that one
+paragraph.
+
+In a paper, you shall try to present a coherent story in a factual
+style. It is not a diary of your journey from project start to
+completed document, but rather an idealized report: Imagine that you
+would do the work once again and take your reader through the process
+from problem definition via data collection (methods) to results and
+interpretation.
+
+\subsection{How to get started}\label{sec:start}
+
+Start by structuring your project. Develop code to perform benchmarks
+for one or two algorithms and one of two cases and use these initial
+cases to write code to visualise data. Integrate these early results
+into your paper, so that you have an initial version of your paper
+with all parts in place. Then add more algorithms, cases and data
+incrementally.
+
+Some further suggestions:
+\begin{itemize}
+\item Write in active form, but use the impersonal
+  scientific ``we''.
+\item You can choose present or past tense, but be consistent.
+\item Be precise, give actual values instead of terms such as
+  ``large'' or ``tiny''.
+\end{itemize}
+Most importantly, make sure that you have (and show) the data to back
+up any claims you make.
+
+The NMBU Writing Centre provides resources for academic writing at
+\url{https://www.nmbu.no/en/students/writing/resources}.
+
+
+\subsection{Version control of code and text}\label{sec:vc}
+
+To keep a log of your benchmarking work including all source code,
+results obtained and figures and text produced, you shall use the
+version control software Git and register all material related to this
+project in a GitLab source code repository. You shall also use this
+repository to share material between partners. Details on how to set
+up Git and GitLab and work with it will follow shortly.
+
+
+\subsection{Plagiarism}\label{sec:plag}
+
+Your term paper shall be \emph{your} work. You are encouraged to
+consult sources from textbooks via scientific papers to online
+material, but your must properly cite your sources. If you directly
+copy material from other sources, you must mark it as a quote. For
+long passages and for figures, you may need to secure the right to
+include material by others in your texts. You are strongly encouraged
+to work through the \emph{Write \& Cite} online course provided by
+NMBU's Writing Centre at
+\url{https://www.nmbu.no/en/students/writing/resources}.
+
+
+\section{Software}\label{sec:sw}
+
+\subsection{Software for benchmarking}\label{sec:swb}
+
+Use Python for running all benchmarks. You can use your usual Python
+setup, but it is good practice to create a dedicated Conda environment
+for each research project to ensure that software versions remain
+fixed during the course of a project, even if you move to newer
+versions of some packages elsewhere.
+
+For this project, you should just create a clone of the
+\texttt{inf221} conda environment that you already have using this command:
+\begin{verbatim}
+conda create --name inf221paper --clone inf221
+\end{verbatim}
+
+
+\subsection{Software for version control}\label{sec:swvc}
+
+You shall use Git as version control software and a GitLab repository
+to manage your material. Details will follow shortly.
+
+
+\subsection{Software for writing}\label{sec:swtex}
+
+For writing, you should use \LaTeX, as it is the most widely used tool
+for writing professional-quality texts in math-heavy fields. The
+following packages provide complete installation packages for
+\LaTeX:
+
+\begin{description}
+\item[Windows] MikTeX from \url{https://miktex.org}
+\item[macOS] MacTeX from \url{https://www.tug.org/mactex/}
+\item[Linux] You should be able to install via your package manager
+\end{description}
+  
+You should install the full packages under Windows or macOS,
+even though they are rather large. If you are really pressed for disk
+space, you can install just a minimal system, but then you may need to
+install add-on packages later.
+
+Overleaf\footnote{\url{https://www.overleaf.com}} has become a popular
+platform for (co-)working on \LaTeX{} documents with integration to
+GitLab. NMBU is about to obtain an institutional subscription at
+present. More information will follow shortly. Until that comes in
+place, you can use a version with some limitations for free.
+
+See Section~\ref{sec:tex} for more information about writing with
+\LaTeX.
+
+
+\section{Benchmarking and analysis}\label{sec:benchanalyze}
+
+Your work should be split into three logical parts:
+\begin{itemize}
+\item generating data;
+\item analyzing and visualizing data;
+\item describing and discussing your work and results.
+\end{itemize}
+
+You can use Jupyter Notebooks or normal Python scripts for generating,
+analyzing and visualizing data.  The data generating step shall store
+benchmark results to disk, where the analysis and visualisation step
+can collect this data. In this way, you are flexible to optimize
+visualization without interfering with data generation.
+
+\subsection{Benchmarking}\label{sec:bench}
+
+\subsubsection{Taking times}
+
+\begin{listing}
+\begin{lstlisting}
+import numpy as np
+import timeit
+import copy
+
+rng = np.random.default_rng(12235)
+test_data = np.random.uniform(size=100)
+
+clock = timeit.Timer(stmt='sort_func(copy(data))',
+         globals={'sort_func': sorted,
+                  'data': test_data,
+                  'copy': copy.copy})
+
+n_ar, t_ar = clock.autorange()
+
+t = clock.repeat(repeat=7, number=n_ar)
+\end{lstlisting}
+  \caption{Example script for timinig with \texttt{timeit.Timer}. See
+    text for details.}
+  \label{lst:timeit}
+\end{listing}
+
+We define some terminology first:
+  \begin{itemize}
+    \item
+    Repetition:
+
+    \begin{itemize}
+        \item
+      a single independent experiment
+    \item
+      we collect data from multiple repetitions to understand
+      fluctuations in measurment process
+    \end{itemize}
+  \item
+    Execution:
+
+    \begin{itemize}
+        \item
+      a single call to function to be timed
+    \item
+      repeated many times to get sufficient interval for timing
+    \item
+      each execution must work on pristine data
+    \end{itemize}
+  \end{itemize}
+
+
+
+Our measurement process then looks like this
+
+  \begin{itemize}
+    \item
+    Single repetition
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+        \item
+      Start timer
+    \item
+      Call timed function \(n\) times (\(n\)~executions)
+    \item
+      Stop timer
+    \item
+      Report time difference as result of repetition
+    \end{enumerate}
+  \item
+    Selection of number of executions
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+        \item
+      Start with some \(n\), e.g. \(n=1\) executions
+    \item
+      Perform single repetition
+    \item
+      If repetition took less than \(t_{\text{min}}\), set \(n=10n\) and
+      go back to 2.
+    \item
+      We now have \(n_E\), the number of executions required per
+      repetition (may depend on problem and problem size)
+    \end{enumerate}
+  \item
+    Multiple repetitions
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+        \item
+      Once a suitable number of executions has been found, perform \(r\)
+      repetitions
+    \item
+      Collect results
+    \item
+      Report
+    \end{enumerate}
+\item
+  Choosing \(t_{\text{min}}\) and \(r\)
+
+  \begin{itemize}
+    \item
+    Python's \texttt{titmeit} uses by default \(t_{\text{min}}=0.2\)s,
+    but for more reliable measurements 1s seems more appropriate
+  \item
+    \(r\) should be at least 3, but 5 or 7 does not hurt
+  \end{itemize}
+\end{itemize}
+
+
+
+The most important Python tool for benchmarking is the Python
+\verb!timeit!
+module\footnote{\url{https://docs.python.org/3/library/timeit.html}},
+which is part of standard Python. In order to have most control over
+the benchmarking, use the \verb!Timer! class from this module.
+
+Listing~\ref{lst:timeit} shows an example of how to do a single
+benchmark with the \verb!Timer! class. Note the following points:
+\begin{enumerate}
+  \item We create test data using the new NumPy random interface
+    (NumPy v1.17 and later). 
+  \item We create a \verb!Timer! object called \verb!clock!, which we
+    then use to run timing experiments.
+  \item The \verb!stmt! argument is a string containing a Python
+    statement. Execution of this statement will be timed. The
+    statement applies \verb!sort_func! to a fresh copy of data.
+  \item We need to provide a fresh copy of the data to be sorted on
+    every call to the \verb!sort_func!; otherwise, when doing in-place
+    sorts, only the first execution of the sorting function would sort
+    the test data.
+  \item The \verb!globals! dictionary passes variables from the scope
+    of our script to the scope in which the \verb!stmt! is executed.
+  \item \verb!clock.autorange()! figures out how many times
+    \verb!stmt! needs to be executed so that total time taken is at
+    least $0.2\,\text{ms}$; this number is returned as \verb!n_ar!.
+  \item \verb!clock.repeat! performs \verb!repeat! repetitions of a
+    benchmark experiment, executing \verb!stmt! \verb!number! times
+    for each experiment. It returns a list \verb!repeat! execution
+    times.
+\end{enumerate}
+You may want to take source code of the \verb!timeit! module to see
+how it works.
+
+\subsubsection{Managing code and results}
+
+Benchmarks should be executed for different data sizes and differently
+structured data as described in Sec.~\ref{sec:scope}. It may be a good
+idea to split benchmarks across different scripts or notebooks. For
+each algorithm, start with a small problem size and increase it until
+the time for a single run becomes so long that increasing further
+makes little sense. Try to do this automatically in a loop.
+
+Collect benchmark results in a Pandas dataframe in each script and
+store them in files using \verb!to_pickle()!.  Ideally, your script or
+notebook should write data to file automatically, no manual action
+should be required. Choose filenames systematically.
+
+To ensure maximum traceability of your results, commit all
+source code to your repository before running a benchmark, and commit
+the result files immediately after the benchmark is complete. Tools
+such as Sumatra\footnote{\url{http://neuralensemble.org/sumatra/}}
+\cite{Davi_2012_48} can automatize this, but you are not expected to
+use them in this project.
+  
+\subsection{Analysis and visualization}\label{sec:analysis}
+
+A Jupyter notebook is probably the most useful approach to analysing
+and visualising benchmark results. The notebook should read the
+pickled benchmark results from file, where useful combine data from
+different benchmarks and in the end generate plots displaying
+results. Choose figures that present the scaling properties of the
+algorithms well and also indicate variations in measurement results,
+using error bars or box plots.
+
+Plots should be saved in PDF format for integration in the final
+report document. For best results, figures should be created in the
+size they will have in the final paper ($84\,\text{mm}$ wide for a
+single column figure), with clear lettering in not too small fonts (8
+points or larger). A sample plotting script is provided with material
+for this paper, showing how to set font and figure sizes.
+
+Choose colors wisely and avoid clutter. In scientific articles one
+usually avoids legends in graphs as well as figure titles on the top
+of figures. Line styles are instead explained in the figure
+caption. Try to be consistent in use of colors across figures and
+remember that many of us cannot distinguish red from green.
+
+If you want to include tables of results in your paper, remember that
+Pandas can generate \LaTeX{} code for dataframes directly. To avoid
+any copy-paste errors, you can write the resulting \LaTeX{} code
+directly to a file and include that file automatically in the \LaTeX{}
+file for your paper.
+
+
+\section{Writing using \LaTeX}\label{sec:tex}
+
+Use \LaTeX{} to write your paper, either with a local installation or
+using Overleaf. An archive containing a template for your paper is
+available on the course website. The archive also contains the source
+code for this document. By building on these example \LaTeX{} source
+codes, you should be able to figure out how to write code which
+\LaTeX{} then turns into a beautifully typeset document.  MiKTeX comes
+with the TeXworks frontend for LaTeX and MacTeX with TeXShop. Those
+frontends should make running life reasonably easy.
+
+Here are some links to introductions to working with \LaTeX{}:
+\begin{itemize}
+  \item \url{https://www.latex-tutorial.com}
+\item \url{https://www.andy-roberts.net/writing/latex}
+\item \url{https://www.dickimaw-books.com/latex/novices/}
+\item \url{https://texfaq.org/FAQ-man-latex}
+  \item \url{https://www.youtube.com/watch?v=fCzF5gDy60g&ab_channel=AcademicLesson}
+\end{itemize}
+
+
+\subsection{Citations in \LaTeX}
+
+\begin{table}
+  \begin{tabular}{ll}
+    \hline
+    Command & Result \\\hline
+    \verb!\cite{CLRS_2009}! & \cite{CLRS_2009} \\
+    \verb!\citet{CLRS_2009}! & \citet{CLRS_2009} \\
+    \verb!\cite[Ch.~2.1]{CLRS_2009}! & \cite[Ch.~2.1]{CLRS_2009} \\
+    \verb!\citet[Ch.~2.1]{CLRS_2009}! & \citet[Ch.~2.1]{CLRS_2009} \\\hline
+    \end{tabular}
+  \caption{Citation commands in \LaTeX with the \texttt{natbib} package
+  and the resulting citations in text.}\label{tab:cite}
+\end{table}
+
+
+To refer to a source in \LaTeX{} use the \verb!\cite! command and its
+siblings as shown in Tab.~\ref{tab:cite}. The argument passed to the
+\verb!\cite! command is the ``cite key'' for the work you want to
+refer to, which is defined in the entry for that work in you
+bibliography file. For the Cormen book, this entry looks like this
+
+\begin{verbatim}
+@book{CLRS_2009,
+ author = {Cormen, Thomas H. and Leiserson, Charles E. 
+           and Rivest, Ronald L. and Stein, Clifford},
+ title = {Introduction to Algorithms, Third Edition},
+ year = {2009},
+ isbn = {0262033844, 9780262033848},
+ edition = {3rd},
+ publisher = {The MIT Press},
+ address = {Cambridge, MA}
+} 
+\end{verbatim}
+
+For more examples, see the \verb!sample_bib.bib! file included in the
+template archive. You are welcome to use the file in your work. For
+more on bibliographies in \LaTeX, see, e.g.,
+\url{https://www.andy-roberts.net/writing/latex/bibliographies}.
+
+If you do not run \LaTeX through TeXworks or TeXShop, you should run
+the following sequence of commands to ensure that all references are
+up to date:
+
+\begin{verbatim}
+pdflatex myfile
+bibtex myfile
+pdflatex myfile 
+pdflatex myfile 
+\end{verbatim}
+
+
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample_bib}
+
+\end{document}
